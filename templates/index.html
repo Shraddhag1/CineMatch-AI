@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineMatch AI | Movie Recommendations</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="navbar">
+        <a class="logo" href="/">🎬 CineMatch <span>AI</span></a>
+        <div class="nav-label">YOUR PERSONAL MOVIE GUIDE</div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <p class="eyebrow">DISCOVER YOUR NEXT FAVORITE</p>
+            <h1>Every movie has a <span>match.</span></h1>
+            <p class="subtitle">
+                Find movies you'll love with AI-powered recommendations
+                based on genres, stories, cast, and more.
+            </p>
+
+            <form method="POST" action="/" class="search-form">
+                <input
+                    type="text"
+                    name="movie_title"
+                    placeholder="Try Avatar, Titanic, The Dark Knight..."
+                    value="{{ search_title }}"
+                    aria-label="Movie title"
+                    required
+                >
+                <button type="submit">Find Matches →</button>
+            </form>
+
+            {% if error %}
+                <p class="error-message">{{ error }}</p>
+            {% endif %}
+        </section>
+
+        {% if recommendations %}
+        <section class="results">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">PERSONALIZED FOR YOU</p>
+                    <h2>Because you searched for
+                        <span>{{ search_title }}</span>
+                    </h2>
+                </div>
+                <p class="result-count">{{ recommendations|length }} matches</p>
+            </div>
+
+            <div class="movie-grid">
+                {% for movie in recommendations %}
+                <article class="movie-card">
+                    {% if movie.poster_path %}
+                    <img
+                        class="poster"
+                        src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}"
+                        alt="Poster for {{ movie.title }}"
+                        loading="lazy"
+                    >
+                    {% else %}
+                    <div class="poster poster-placeholder">
+                        <span>🎬</span>
+                        <p>Poster unavailable</p>
+                    </div>
+                    {% endif %}
+
+                    <div class="movie-info">
+                        <div class="movie-title-row">
+                            <h3>{{ movie.title }}</h3>
+                            <span class="rating">
+                                ★ {{ "%.1f"|format(movie.rating|float) }}
+                            </span>
+                        </div>
+
+                        <p class="overview">
+                            {{ movie.overview or "No description available." }}
+                        </p>
+
+                        <p class="similarity">
+                            AI similarity: {{ "%.1f"|format(movie.similarity * 100) }}%
+                        </p>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+    </main>
+
+    <footer>
+        <p>🎬 CineMatch AI — Find your next favorite movie.</p>
+        <p>Powered by machine learning and movie metadata.</p>
+    </footer>
+</body>
+</html>
